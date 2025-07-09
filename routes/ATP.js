@@ -14,10 +14,18 @@ const UNDER_PRESSURE_URL = 'https://www.atptour.com/en/stats/leaderboard?boardTy
 const SERVICE_GAMES_WON_URL = 'https://www.atptour.com/en/stats/service-games-won';
 
 /* ATP RANKINGS */
-
+17 |
+/**
+ * @openapi
+ * /atp/rankings/singles:
+ *   get:
+ *     description: Returns ATP singles rankings
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 // ATP singles rankings API response
 router.get('/rankings/singles', (req, res) => {
-
   let rankings = [];
   let countries = [];
   let players = [];
@@ -73,10 +81,18 @@ router.get('/rankings/singles', (req, res) => {
     res.json(JSONResponse);
   });
 });
-
+85 |
+/**
+ * @openapi
+ * /atp/rankings/race-to-london:
+ *   get:
+ *     description: Returns ATP Race to London rankings
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 // ATP Race to London API response
 router.get('/rankings/race-to-london', (req, res) => {
-
   let rankings = [];
   let countries = [];
   let players = [];
@@ -132,10 +148,18 @@ router.get('/rankings/race-to-london', (req, res) => {
     res.json(JSONResponse);
   });
 });
-
+153 |
+/**
+ * @openapi
+ * /atp/rankings/race-to-milan:
+ *   get:
+ *     description: Returns ATP Race to Milan rankings
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 // ATP singles rankings API response
 router.get('/rankings/race-to-milan', (req, res) => {
-
   let rankings = [];
   let countries = [];
   let players = [];
@@ -191,10 +215,18 @@ router.get('/rankings/race-to-milan', (req, res) => {
     res.json(JSONResponse);
   });
 });
-
+221 |
+/**
+ * @openapi
+ * /atp/rankings/doubles:
+ *   get:
+ *     description: Returns ATP doubles rankings
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 // ATP doubles rankings API response
 router.get('/rankings/doubles', (req, res) => {
-
   let rankings = [];
   let countries = [];
   let players = [];
@@ -252,9 +284,17 @@ router.get('/rankings/doubles', (req, res) => {
     res.json(JSONResponse);
   });
 });
-
+291 |
 /* ATP STATISTICS*/
-
+/**
+ * @openapi
+ * /atp/stats/serve-leaders:
+ *   get:
+ *     description: Returns ATP serve leaders
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 // ATP stats leaderboard serve leaders API response
 router.get('/stats/serve-leaders', function (req, res) {
   let players = [];
@@ -273,12 +313,19 @@ router.get('/stats/serve-leaders', function (req, res) {
     })
   });
 });
-
+321 |
+/**
+ * @openapi
+ * /atp/players/win-loss:
+ *   get:
+ *     description: Returns ATP player win/loss records
+ *     responses:
+ *       200:
+ *         description: Success
+ */
 /* ATP PLAYER INFORMATION */
-
 // ATP player win/loss index  API response
 router.get('/players/win-loss', (req, res) => {
-
   let rankings = [];
   let countries = [];
   let players = [];

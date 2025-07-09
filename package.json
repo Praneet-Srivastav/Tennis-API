@@ -11,6 +11,10 @@
   "dependencies": {
     "axios": "^0.18.0",
     "cheerio": "^1.0.0-rc.2",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "gender-detection-from-name": "^1.11.4",
+    "gender-guess": "^1.0.4",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }
