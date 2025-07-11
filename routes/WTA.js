@@ -67,7 +67,7 @@ router.get('/rankings/singles', (req, res) => {
     res.json(JSONResponse);
   });
 });
-30 |
+
 /**
  * @openapi
  * /wta/players/index:
@@ -81,9 +81,9 @@ router.get('/rankings/singles', (req, res) => {
 router.get('/wta/doubles', (req, res) => {
   res.json({status: 'wta doubles!'})
 });
-43 |
+
 /* WTA STATISTICS */
-45 |
+
 /**
  * @openapi
  * /wta/players/coaches:
@@ -158,8 +158,6 @@ router.get('/players/coaches', function (req, res) {
   })
 })
 
-// Export API routes
-module.exports = router;
 // WTA Player Detection Service imports
 const wtaPlayerService = require('../services/wta-player-service');
 const cacheService = require('../services/cache-service');
@@ -519,6 +517,7 @@ router.post('/override-player', async (req, res) => {
         });
     }
 });
+
 /**
  * @openapi
  * /wta/test-gender-detection:
@@ -558,3 +557,126 @@ router.get('/test-gender-detection', async (req, res) => {
         });
     }
 });
+
+/**
+ * @openapi
+ * /wta/check-wta-status:
+ *   post:
+ *     description: Simple WTA status check - returns "WTA" or empty string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               homePlayer:
+ *                 type: string
+ *                 description: Home player(s) name
+ *                 example: "Serena Williams"
+ *               awayPlayer:
+ *                 type: string
+ *                 description: Away player(s) name  
+ *                 example: "Maria Sharapova"
+ *     responses:
+ *       200:
+ *         description: WTA status result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 wtaStatus:
+ *                   type: string
+ *                   description: Either "WTA" or empty string
+ *                   example: "WTA"
+ */
+router.post('/check-wta-status', async (req, res) => {
+    try {
+        const { homePlayer, awayPlayer } = req.body;
+        
+        if (!homePlayer || !awayPlayer) {
+            return res.status(400).json({
+                error: 'Both homePlayer and awayPlayer are required'
+            });
+        }
+
+        const simpleWTAClassifier = require('../services/simple-wta-classifier');
+        const wtaStatus = await simpleWTAClassifier.getWTAStatus(homePlayer, awayPlayer);
+        
+        res.json({
+            wtaStatus: wtaStatus
+        });
+    } catch (error) {
+        console.error('Error checking WTA status:', error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+});
+
+/**
+ * @openapi
+ * /wta/process-excel-simple:
+ *   post:
+ *     description: Process Excel data and return with WTA status populated
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     homeopponent:
+ *                       type: string
+ *                     awayopponent:
+ *                       type: string
+ *     responses:
+ *       200:
+ *         description: Processed data with WTA status
+ */
+router.post('/process-excel-simple', async (req, res) => {
+    try {
+        const { data } = req.body;
+        
+        if (!data || !Array.isArray(data)) {
+            return res.status(400).json({
+                error: 'data array is required'
+            });
+        }
+
+        if (data.length > 200) {
+            return res.status(400).json({
+                error: 'Maximum 200 records per request'
+            });
+        }
+
+        const simpleWTAClassifier = require('../services/simple-wta-classifier');
+        const processedData = await simpleWTAClassifier.processExcelData(data);
+        
+        const wtaCount = processedData.filter(row => row['WTA?'] === 'WTA').length;
+        
+        res.json({
+            success: true,
+            data: processedData,
+            summary: {
+                totalProcessed: data.length,
+                wtaMatches: wtaCount,
+                nonWtaMatches: data.length - wtaCount
+            }
+        });
+    } catch (error) {
+        console.error('Error processing Excel data:', error);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+});
+
+// Export API routes
+module.exports = router;
